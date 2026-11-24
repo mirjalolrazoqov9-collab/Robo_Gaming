@@ -1,1 +1,338 @@
 
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b14">
+<title>ROBO Gaming</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080b14;color:white;font-family:Arial,sans-serif}
+header{background:#10182a;padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #00eaff}
+.logo{font-size:23px;font-weight:bold;color:#00eaff}
+button{cursor:pointer}
+.nav{padding:18px;text-align:center}
+.nav a{color:white;text-decoration:none;margin:12px}
+.hero{text-align:center;padding:75px 15px;background:radial-gradient(circle,#263d69,#080b14)}
+.hero h1{font-size:clamp(38px,8vw,65px);color:#00eaff}
+.hero p{margin:20px;color:#ccc}
+.btn{background:#00eaff;color:#06101b;border:0;border-radius:7px;padding:12px 20px;font-weight:bold}
+.section{padding:45px 6%;text-align:center}
+.section h2{margin-bottom:15px}
+.search{width:min(100%,450px);padding:14px;margin:20px 0;background:#111b2d;color:white;border:1px solid #00eaff;border-radius:8px}
+.filters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:25px}
+.filters button{padding:10px 16px;border:1px solid #00eaff;background:#152139;color:white;border-radius:20px}
+.filters button.active{background:#00eaff;color:black}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;text-align:left}
+.game{background:#121e33;border:1px solid #24445e;border-radius:12px;padding:22px}
+.game .icon{font-size:43px;margin-bottom:12px}
+.game h3{margin-bottom:12px}
+.game p{color:#aab5c8;font-size:14px;line-height:1.6;min-height:44px}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}
+.actions button,.actions a{font-size:12px;padding:10px;border-radius:6px;border:1px solid #00eaff;background:transparent;color:#00eaff;text-decoration:none}
+.actions .play{background:#00eaff;color:#06101b}
+footer{padding:25px;text-align:center;background:#10182a;color:#aaa}
+.overlay{display:none;position:fixed;inset:0;background:#000e;z-index:20;overflow:auto;padding:20px}
+.modal{background:#111b2d;border:1px solid #00eaff;border-radius:12px;padding:25px;max-width:440px;margin:35px auto;text-align:center}
+.modal h2{color:#00eaff;margin-bottom:20px}
+.modal input{width:100%;padding:13px;margin:9px 0;background:#080b14;color:white;border:1px solid #00eaff;border-radius:6px}
+.close{float:right;padding:8px 12px;background:#ed5265;color:white;border:0;border-radius:5px}
+#snakeCanvas{width:100%;max-width:360px;background:#030812;border:1px solid #00eaff}
+.controls{display:grid;grid-template-columns:55px 55px 55px;gap:7px;justify-content:center;margin:18px}
+.controls button{padding:13px;background:#203651;color:white;border:1px solid #00eaff;border-radius:7px}
+#toast{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#17243b;border:1px solid #00eaff;padding:14px;border-radius:8px;z-index:50}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">ROBO_GAMING</div>
+ <button class="btn" onclick="openPanel()">ADMIN</button>
+</header>
+
+<div class="nav">
+ <a href="#home">Home</a>
+ <a href="#games">Games</a>
+ <a href="#about">About</a>
+</div>
+
+<main id="home">
+
+<div class="hero">
+ <h1>ROBO GAMING</h1>
+ <p>WELCOME TO THE GAMING WORLD</p>
+ <a href="#games"><button class="btn">EXPLORE GAMES</button></a>
+</div>
+
+<section class="section" id="games">
+ <h2>OUR GAMES</h2>
+ <p>O'zingizga yoqqan o'yinni tanlang.</p>
+
+ <input class="search" id="search" placeholder="O'yin qidirish..." oninput="searchGames()">
+
+ <div class="filters">
+  <button class="active" onclick="filterGames('all',this)">All</button>
+  <button onclick="filterGames('adventure',this)">Adventure</button>
+  <button onclick="filterGames('action',this)">Action</button>
+  <button onclick="filterGames('online',this)">Online</button>
+  <button onclick="filterGames('mini',this)">Mini Games</button>
+ </div>
+
+ <div class="games" id="gameList">
+
+  <article class="game" data-name="minecraft" data-category="adventure">
+   <div class="icon">⛏️</div>
+   <h3>Minecraft</h3>
+   <p>Explore, build and survive in a block world.</p>
+   <div class="actions">
+    <button onclick="notify('Minecraft sayt ichida ishlamaydi. Visit tugmasini bosing.')">▶ Play</button>
+    <a href="https://www.minecraft.net/en-us/download" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.minecraft.net/" target="_blank" rel="noopener">Visit</a>
+   </div>
+  </article>
+
+  <article class="game" data-name="roblox" data-category="online">
+   <div class="icon">🎮</div>
+   <h3>Roblox</h3>
+   <p>Discover millions of player-created games.</p>
+   <div class="actions">
+    <a class="play" href="https://www.roblox.com/" target="_blank" rel="noopener">▶ Play</a>
+    <a href="https://www.roblox.com/download" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.roblox.com/" target="_blank" rel="noopener">Visit</a>
+   </div>
+  </article>
+
+  <article class="game" data-name="fortnite" data-category="action">
+   <div class="icon">⚔️</div>
+   <h3>Fortnite</h3>
+   <p>Enter the battle and explore new worlds.</p>
+   <div class="actions">
+    <a class="play" href="https://www.fortnite.com/" target="_blank" rel="noopener">▶ Play</a>
+    <a href="https://www.fortnite.com/download" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.fortnite.com/" target="_blank" rel="noopener">Visit</a>
+   </div>
+  </article>
+
+  <article class="game" data-name="robo snake" data-category="mini">
+   <div class="icon">🐍</div>
+   <h3>ROBO Snake</h3>
+   <p>Play our mini-game directly inside ROBO Gaming.</p>
+   <div class="actions">
+    <button class="play" onclick="openSnake()">▶ Play</button>
+   </div>
+  </article>
+
+ </div>
+ <p id="noResults" style="display:none;margin-top:25px">O'yin topilmadi.</p>
+</section>
+
+<section class="section" id="about">
+ <h2>ABOUT ROBO</h2>
+ <p>ROBO Gaming — Your Gaming Universe.</p>
+</section>
+
+</main>
+
+<footer>© 2026 ROBO Gaming. All Rights Reserved.</footer>
+
+<!-- ADMIN LOGIN -->
+<div class="overlay" id="login">
+ <div class="modal">
+  <button class="close" onclick="hidePanel('login')">X</button>
+  <h2>ADMIN LOGIN</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button class="btn" onclick="login()">LOGIN</button>
+  <p id="message" style="margin-top:15px"></p>
+ </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div class="overlay" id="dashboard">
+ <div class="modal">
+  <button class="close" onclick="hidePanel('dashboard')">X</button>
+  <h2>ROBO ADMIN</h2>
+  <p id="welcome"></p>
+  <p id="role"></p>
+  <br>
+  <button class="btn" onclick="notify('Admin demo panel')">Dashboard</button>
+  <br><br>
+  <button class="btn" onclick="logout()">LOGOUT</button>
+ </div>
+</div>
+
+<!-- SNAKE -->
+<div class="overlay" id="snake">
+ <div class="modal">
+  <button class="close" onclick="closeSnake()">X</button>
+  <h2>ROBO SNAKE 🐍</h2>
+  <p>Score: <span id="score">0</span></p>
+  <canvas id="snakeCanvas" width="360" height="360"></canvas>
+  <br><br>
+  <button class="btn" onclick="startSnake()">START / RESTART</button>
+  <div class="controls">
+   <span></span><button onclick="direction(0,-1)">▲</button><span></span>
+   <button onclick="direction(-1,0)">◀</button>
+   <button onclick="direction(0,1)">▼</button>
+   <button onclick="direction(1,0)">▶</button>
+  </div>
+  <p>Telefon tugmalari yoki klaviaturadan foydalaning.</p>
+ </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+function notify(text){
+ const t=document.getElementById("toast");
+ t.textContent=text;
+ t.style.display="block";
+ clearTimeout(window.noticeTimer);
+ window.noticeTimer=setTimeout(()=>t.style.display="none",2500);
+}
+
+// SEARCH
+function searchGames(){
+ const q=document.getElementById("search").value.toLowerCase();
+ let count=0;
+ document.querySelectorAll(".game").forEach(card=>{
+  const match=card.dataset.name.includes(q);
+  const categoryMatch=activeFilter==="all"||card.dataset.category===activeFilter;
+  card.style.display=match&&categoryMatch?"block":"none";
+  if(match&&categoryMatch)count++;
+ });
+ document.getElementById("noResults").style.display=count?"none":"block";
+}
+
+let activeFilter="all";
+
+function filterGames(category,button){
+ activeFilter=category;
+ document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ searchGames();
+}
+
+// ADMIN DEMO
+// Frontend passwords are visible. Use a secure backend before publishing.
+const admins=[
+ {username:"Dino",password:"CHANGE_ME_1",role:"Super Admin"},
+ {username:"danaa",password:"CHANGE_ME_2",role:"Admin"}
+];
+
+function openPanel(){
+ document.getElementById("login").style.display="block";
+}
+function hidePanel(id){
+ document.getElementById(id).style.display="none";
+}
+function login(){
+ const u=document.getElementById("username").value;
+ const p=document.getElementById("password").value;
+ const user=admins.find(a=>a.username===u&&a.password===p);
+ if(!user){
+  document.getElementById("message").textContent="Login yoki parol noto'g'ri!";
+  return;
+ }
+ hidePanel("login");
+ document.getElementById("dashboard").style.display="block";
+ document.getElementById("welcome").textContent="Welcome, "+user.username;
+ document.getElementById("role").textContent="Role: "+user.role;
+}
+function logout(){
+ hidePanel("dashboard");
+ document.getElementById("username").value="";
+ document.getElementById("password").value="";
+ document.getElementById("message").textContent="";
+}
+
+// SNAKE GAME
+const canvas=document.getElementById("snakeCanvas");
+const ctx=canvas.getContext("2d");
+const size=18;
+let snake=[],food={x:10,y:10},dx=1,dy=0;
+let points=0,gameTimer=null,playing=false;
+
+function makeFood(){
+ food={
+  x:Math.floor(Math.random()*20),
+  y:Math.floor(Math.random()*20)
+ };
+}
+
+function draw(){
+ ctx.fillStyle="#030812";
+ ctx.fillRect(0,0,360,360);
+ ctx.fillStyle="#00eaff";
+ snake.forEach(s=>ctx.fillRect(s.x*size,s.y*size,16,16));
+ ctx.fillStyle="#ff5277";
+ ctx.fillRect(food.x*size,food.y*size,16,16);
+}
+
+function startSnake(){
+ clearInterval(gameTimer);
+ snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+ dx=1;dy=0;points=0;
+ makeFood();
+ playing=true;
+ document.getElementById("score").textContent=points;
+ draw();
+ gameTimer=setInterval(moveSnake,150);
+}
+
+function moveSnake(){
+ if(!playing)return;
+ const head={x:snake[0].x+dx,y:snake[0].y+dy};
+ if(head.x<0||head.x>=20||head.y<0||head.y>=20||
+ snake.some(s=>s.x===head.x&&s.y===head.y)){
+  playing=false;
+  clearInterval(gameTimer);
+  notify("Game Over! Score: "+points);
+  return;
+ }
+ snake.unshift(head);
+ if(head.x===food.x&&head.y===food.y){
+  points+=10;
+  document.getElementById("score").textContent=points;
+  makeFood();
+ }else snake.pop();
+ draw();
+}
+
+function direction(x,y){
+ if(!playing)return;
+ if(x===-dx&&y===-dy)return;
+ dx=x;dy=y;
+}
+
+function openSnake(){
+ document.getElementById("snake").style.display="block";
+ startSnake();
+}
+
+function closeSnake(){
+ playing=false;
+ clearInterval(gameTimer);
+ hidePanel("snake");
+}
+
+document.addEventListener("keydown",e=>{
+ if(!playing)return;
+ const k={
+ ArrowUp:[0,-1],ArrowDown:[0,1],
+ ArrowLeft:[-1,0],ArrowRight:[1,0]
+ };
+ if(k[e.key]){
+ e.preventDefault();
+ direction(k[e.key][0],k[e.key][1]);
+ }
+});
+</script>
+
+</body>
+</html>
